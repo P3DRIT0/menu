@@ -1,0 +1,138 @@
+.mqd-admin-wrap {
+    max-width: 1180px;
+}
+
+.mqd-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.mqd-panel {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+}
+
+.mqd-panel-head,
+.mqd-admin-section-head,
+.mqd-inline-fields,
+.mqd-pdf-row,
+.mqd-pdf-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mqd-panel-head,
+.mqd-admin-section-head {
+    justify-content: space-between;
+}
+
+.mqd-inline-fields {
+    flex-wrap: wrap;
+}
+
+.mqd-inline-fields input {
+    width: 120px;
+}
+
+.mqd-sections,
+.mqd-pdf-buttons {
+    display: grid;
+    gap: 16px;
+}
+
+.mqd-admin-section {
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.mqd-admin-section-head {
+    padding: 14px 16px;
+    background: #f8f9fb;
+}
+
+.mqd-collapse-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.mqd-collapse-symbol {
+    width: 18px;
+    text-align: center;
+}
+
+.mqd-admin-section-body {
+    padding: 16px;
+    background: #fff;
+}
+
+.mqd-items {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.mqd-admin-item,
+.mqd-pdf-row {
+    border: 1px solid #e2e4e7;
+    border-radius: 10px;
+    padding: 14px;
+    background: #fcfcfd;
+}
+
+.mqd-item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mqd-field {
+    display: grid;
+    gap: 6px;
+    flex: 1;
+}
+
+.mqd-field-full,
+.mqd-pdf-url {
+    grid-column: 1 / -1;
+}
+
+.mqd-field input {
+    width: 100%;
+}
+
+.button-link-delete {
+    color: #b32d2e;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+@media (max-width: 782px) {
+    .mqd-item-grid,
+    .mqd-pdf-row,
+    .mqd-pdf-actions {
+        grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .mqd-admin-section-head,
+    .mqd-panel-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

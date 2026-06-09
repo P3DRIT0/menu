@@ -1,0 +1,548 @@
+/* --- MENU QR DINÁMICO - VERSIÓN DEFINITIVA (MÓVIL COMPACTO) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+.mqd-menu {
+    --mqd-bg: #ffffff;
+    --mqd-bg-section-header: #fafaf8;
+    --mqd-text-primary: #1a1a1a;
+    --mqd-text-secondary: #4a4a4a;
+    --mqd-text-muted: #8a8a8a;
+    --mqd-border: #e8e8e8;
+    --mqd-border-light: #f0f0f0;
+    
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    background: var(--mqd-bg);
+    color: var(--mqd-text-primary);
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+/* ===== HEADER ===== */
+.mqd-menu-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--mqd-border);
+    padding-bottom: 1.5rem;
+}
+
+.mqd-menu-header h2 {
+    font-size: 1.75rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--mqd-text-primary);
+}
+
+/* ===== TOOLS ===== */
+.mqd-menu-tools {
+    margin-bottom: 2rem;
+}
+
+/* Desktop: layout normal */
+.mqd-menu-tools-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mqd-menu-tools-row:first-child {
+    margin-bottom: 1rem;
+}
+
+.mqd-search-field {
+    flex: 1;
+    min-width: 200px;
+}
+
+.mqd-search-input {
+    width: 100%;
+    padding: 0.75rem 0;
+    border: none;
+    border-bottom: 1.5px solid var(--mqd-border);
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    background: transparent;
+    transition: border-color 0.2s ease;
+}
+
+.mqd-search-input:focus {
+    outline: none;
+    border-bottom-color: var(--mqd-text-primary);
+}
+
+/* Grupo de acciones */
+.mqd-actions-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.mqd-tool-link {
+    background: none;
+    border: none;
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--mqd-text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.mqd-tool-link:hover {
+    color: var(--mqd-text-primary);
+}
+
+/* Accesos rápidos desktop */
+.mqd-section-shortcuts {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.mqd-shortcut {
+    background: none;
+    border: none;
+    padding: 0.55rem 0.35rem;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--mqd-text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    border-bottom: 1px solid transparent;
+    min-height: 42px;
+}
+
+.mqd-shortcut:hover,
+.mqd-shortcut.is-active {
+    color: var(--mqd-text-primary);
+    border-bottom-color: var(--mqd-text-primary);
+}
+
+.mqd-results {
+    font-size: 0.75rem;
+    color: var(--mqd-text-muted);
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* ===== ACORDEÓN ===== */
+.mqd-accordion {
+    margin-bottom: 2rem;
+    border: 1px solid var(--mqd-border);
+    background: var(--mqd-bg);
+}
+
+.mqd-section {
+    border-bottom: 1px solid var(--mqd-border);
+}
+
+.mqd-section:last-child {
+    border-bottom: none;
+}
+
+.mqd-section-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--mqd-bg-section-header);
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s ease;
+}
+
+.mqd-section-toggle:hover {
+    background: #f5f5f3;
+}
+
+.mqd-section-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.mqd-toggle-symbol {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--mqd-text-muted);
+    width: 1rem;
+}
+
+.mqd-section-title-wrap span:last-child {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--mqd-text-primary);
+}
+
+.mqd-section-count {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--mqd-text-muted);
+    background: rgba(0,0,0,0.05);
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+}
+
+.mqd-section-content {
+    padding: 0.5rem 1.25rem 0.75rem 1.25rem;
+    background: var(--mqd-bg);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.26s ease;
+    will-change: max-height;
+}
+
+/* ===== ITEMS ===== */
+.mqd-item {
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--mqd-border-light);
+}
+
+.mqd-item:last-child {
+    border-bottom: none;
+}
+
+.mqd-item-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.mqd-item-name-es {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--mqd-text-primary);
+    flex: 1;
+}
+
+.mqd-item-price {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mqd-text-primary);
+    white-space: nowrap;
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    margin-left: 1rem;
+}
+
+.mqd-item-name-en {
+    width: 100%;
+    font-size: 0.8125rem;
+    color: var(--mqd-text-muted);
+    font-weight: 400;
+    margin-top: 0.25rem;
+}
+
+.mqd-item mark {
+    background: #f0f0f0;
+    color: inherit;
+    padding: 0 2px;
+    font-weight: 500;
+}
+
+.mqd-item-bullet,
+.mqd-item-dots,
+.mqd-item-name,
+.mqd-item-description {
+    display: none;
+}
+
+/* ===== EMPTY STATE ===== */
+.mqd-empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--mqd-text-muted);
+    font-size: 0.875rem;
+    background: var(--mqd-bg);
+}
+
+/* ===== BOTONES PDF ===== */
+.mqd-downloads {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--mqd-border);
+    flex-wrap: wrap;
+}
+
+.mqd-download-button {
+    display: inline-block;
+    padding: 0.625rem 1.5rem;
+    background: none;
+    border: 1px solid var(--mqd-border);
+    color: var(--mqd-text-primary);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.mqd-download-button:hover {
+    background: var(--mqd-text-primary);
+    border-color: var(--mqd-text-primary);
+    color: white;
+}
+
+.mqd-back-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--mqd-text-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    z-index: 1000;
+}
+
+.mqd-back-top:hover {
+    opacity: 0.8;
+}
+
+/* ===== RESPONSIVE MÓVIL - REDISEÑO COMPACTO ===== */
+@media (max-width: 768px) {
+    .mqd-menu {
+        width: 100%;
+        max-width: none;
+        padding: 1.5rem 1rem;
+        box-sizing: border-box;
+    }
+    
+    .mqd-menu-header {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+    
+    .mqd-menu-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Tools en móvil: todo en columna, compacto */
+    .mqd-menu-tools-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+        width: 100%;
+    }
+    
+    .mqd-menu-tools-row:first-child {
+        margin-bottom: 0.55rem;
+    }
+    
+    /* Buscador ocupa todo el ancho */
+    .mqd-search-field {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    .mqd-search-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.75rem 0;
+        font-size: 0.95rem;
+    }
+    
+    /* Grupo de acciones: horizontal, centrado, compacto */
+    .mqd-actions-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        margin-bottom: 0.15rem;
+    }
+    
+    .mqd-tool-link {
+        flex: 1 1 calc(50% - 0.375rem);
+        padding: 0.5rem 0.95rem;
+        background: var(--mqd-bg-section-header);
+        border: 1px solid var(--mqd-border);
+        border-radius: 30px;
+        font-size: 0.74rem;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+        text-align: center;
+    }
+    
+    /* Contenedor de shortcuts + resultados: sin espacio extra */
+    .mqd-menu-tools-row:last-child {
+        gap: 0.35rem;
+        margin-top: 0;
+        width: 100%;
+    }
+    
+    /* Shortcuts con scroll horizontal compacto */
+    .mqd-section-shortcuts {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        gap: 0.65rem;
+        padding: 0.1rem 1rem 0.1rem 0;
+        margin-right: -1rem;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 18px), transparent 100%);
+    }
+
+    .mqd-section-shortcuts::-webkit-scrollbar {
+        display: none;
+        height: 0;
+    }
+
+    .mqd-section-shortcuts::-webkit-scrollbar-thumb {
+        display: none;
+    }
+    
+    .mqd-shortcut {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 0.8rem 1.2rem;
+        background: var(--mqd-bg-section-header);
+        border-radius: 30px;
+        font-size: 0.95rem;
+        border-bottom: none;
+        scroll-snap-align: start;
+        line-height: 1.1;
+        min-height: 48px;
+    }
+    
+    .mqd-shortcut:hover,
+    .mqd-shortcut.is-active {
+        background: var(--mqd-text-primary);
+        color: white;
+        border-bottom: none;
+    }
+    
+    /* Resultados: inline con los shortcuts, no debajo */
+    .mqd-results {
+        display: none;
+    }
+    
+    /* Secciones */
+    .mqd-accordion {
+        width: 100%;
+    }
+
+    .mqd-section {
+        width: 100%;
+    }
+
+    .mqd-section-toggle {
+        width: 100%;
+        padding: 0.85rem 1rem;
+    }
+    
+    .mqd-section-title-wrap span:last-child {
+        font-size: 0.98rem;
+    }
+    
+    .mqd-section-content {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.55rem 1rem 0.8rem 1rem;
+    }
+    
+    /* Items */
+    .mqd-item {
+        padding: 0.8rem 0;
+    }
+    
+    .mqd-item-name-es {
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+    
+    .mqd-item-price {
+        font-size: 0.84rem;
+    }
+    
+    .mqd-item-name-en {
+        font-size: 0.76rem;
+        margin-top: 0.25rem;
+        line-height: 1.35;
+    }
+    
+    /* Botones PDF */
+    .mqd-downloads {
+        width: 100%;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+    }
+    
+    .mqd-download-button {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.6rem 1rem;
+        font-size: 0.7rem;
+        text-align: center;
+    }
+    
+    .mqd-back-top {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 480px) {
+    .mqd-menu {
+        padding: 1rem 0.75rem;
+    }
+    
+    .mqd-actions-group {
+        gap: 0.5rem;
+    }
+    
+    .mqd-tool-link {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.65rem;
+    }
+    
+    .mqd-shortcut {
+        padding: 0.65rem 0.95rem;
+        font-size: 0.82rem;
+    }
+    
+    .mqd-results {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+    }
+
+    .mqd-section-content {
+        transition: none !important;
+    }
+}

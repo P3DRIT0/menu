@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Preview Menu QR Dinamico</title>
+    <link rel="stylesheet" href="./assets/css/front.css">
+</head>
+<body>
+    <div class="mqd-menu">
+        <div class="mqd-menu-header">
+            <h2>Carta de comidas</h2>
+        </div>
+
+        <div class="mqd-menu-tools" aria-label="Herramientas de carta">
+            <div class="mqd-menu-tools-row">
+                <label class="mqd-search-field">
+                    <span class="screen-reader-text">Buscar en la carta</span>
+                    <input type="search" class="mqd-search-input" placeholder="Buscar plato..." data-mqd-search>
+                </label>
+                <div class="mqd-actions-group">
+                    <button type="button" class="mqd-tool-link" data-mqd-clear-search hidden>Limpiar</button>
+                    <button type="button" class="mqd-tool-link" data-mqd-expand-all>Abrir todo</button>
+                    <button type="button" class="mqd-tool-link" data-mqd-collapse-all>Cerrar todo</button>
+                </div>
+            </div>
+            <div class="mqd-menu-tools-row">
+                <div class="mqd-section-shortcuts" aria-label="Accesos rapidos">
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-0">Entrantes</button>
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-1">Nuestros Mariscos del Día</button>
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-2">Ensaladas</button>
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-3">Pescados</button>
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-4">Carnes</button>
+                    <button type="button" class="mqd-shortcut" data-mqd-jump="mqd-section-5">Arroces</button>
+                </div>
+                <p class="mqd-results" data-mqd-results>39 platos</p>
+            </div>
+        </div>
+
+        <div class="mqd-accordion">
+            <section class="mqd-section" id="mqd-section-0" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="true" aria-controls="mqd-section-content-0">
+                    <span class="mqd-section-title-wrap">
+                        <span class="mqd-toggle-symbol">-</span>
+                        <span>Entrantes</span>
+                    </span>
+                    <span class="mqd-section-count">10</span>
+                </button>
+                <div id="mqd-section-content-0" class="mqd-section-content" data-mqd-section-content>
+                    <article class="mqd-item" data-mqd-item data-search-text="anchoas con tetilla anchovies with tetilla 28€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Anchoas con tetilla</span><span class="mqd-item-price">28€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Anchovies with tetilla</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="empanada casera consulte a nuestro personal de qué es hoy homemade pie ask our staff what it is today 12€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Empanada Casera (Consulte a nuestro personal de qué es hoy)</span><span class="mqd-item-price">12€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Homemade Pie (Ask our staff what it is today)</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="croquetas de carabinero king prawn croquettes 15€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Croquetas de Carabinero</span><span class="mqd-item-price">15€</span></div><div class="mqd-item-name-en" data-mqd-item-english>King Prawn Croquettes</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="ensaladilla rusa russian salad 12€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Ensaladilla Rusa</span><span class="mqd-item-price">12€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Russian Salad</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="pulpo feira o plancha octopus feira or grilled 23€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Pulpo Feira o Plancha</span><span class="mqd-item-price">23€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Octopus Feira or Grilled</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="calamar encebollado romana squid in onion romaine 15€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Calamar encebollado / romana</span><span class="mqd-item-price">15€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Squid in onion / romaine</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="revuelto de langostino setas y jamón scrambled eggs with prawns mushrooms and ham 14€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Revuelto de langostino, setas y jamón</span><span class="mqd-item-price">14€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Scrambled eggs with prawns, mushrooms and ham</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="jamón ibérico iberian ham 22€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Jamón Ibérico</span><span class="mqd-item-price">22€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Iberian Ham</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="queso de cabra goat cheese 14€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Queso de Cabra</span><span class="mqd-item-price">14€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Goat Cheese</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="pimiento de padrón en temporada padron pepper in season 10€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Pimiento de Padrón (en temporada)</span><span class="mqd-item-price">10€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Padron Pepper (in season)</div></article>
+                </div>
+            </section>
+
+            <section class="mqd-section" id="mqd-section-1" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="false" aria-controls="mqd-section-content-1">
+                    <span class="mqd-section-title-wrap"><span class="mqd-toggle-symbol">+</span><span>Nuestros Mariscos del Día</span></span>
+                    <span class="mqd-section-count">12</span>
+                </button>
+                <div id="mqd-section-content-1" class="mqd-section-content" data-mqd-section-content hidden>
+                    <article class="mqd-item" data-mqd-item data-search-text="navajas a la plancha grilled razor clams s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Navajas a la plancha</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Grilled razor clams</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="berberechos al vapor steamed cockles s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Berberechos al vapor</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Steamed cockles</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="almejas a la marinera clams a la marinera s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Almejas a la Marinera</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Clams a la Marinera</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="zamburiña scallop 20€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Zamburiña</span><span class="mqd-item-price">20€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Scallop</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="camarón shrimp s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Camarón</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Shrimp</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="bogavante spiny lobster s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Bogavante</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Spiny Lobster</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="percebe barnacle s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Percebe</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Barnacle</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="cigala crayfish s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Cigala</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Crayfish</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="langosta clawed lobster s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Langosta</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Clawed Lobster</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="centolla spider crab s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Centolla</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Spider crab</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="bruño bruño s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Bruño</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Bruño</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="nécora crab s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Nécora</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Crab</div></article>
+                </div>
+            </section>
+
+            <section class="mqd-section" id="mqd-section-2" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="false" aria-controls="mqd-section-content-2">
+                    <span class="mqd-section-title-wrap"><span class="mqd-toggle-symbol">+</span><span>Ensaladas</span></span>
+                    <span class="mqd-section-count">2</span>
+                </button>
+                <div id="mqd-section-content-2" class="mqd-section-content" data-mqd-section-content hidden>
+                    <article class="mqd-item" data-mqd-item data-search-text="ensalada simple simple salad 8€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Ensalada simple</span><span class="mqd-item-price">8€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Simple salad</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="ensalada de la casa house salad 13€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Ensalada de la casa</span><span class="mqd-item-price">13€</span></div><div class="mqd-item-name-en" data-mqd-item-english>House salad</div></article>
+                </div>
+            </section>
+
+            <section class="mqd-section" id="mqd-section-3" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="false" aria-controls="mqd-section-content-3">
+                    <span class="mqd-section-title-wrap"><span class="mqd-toggle-symbol">+</span><span>Pescados</span></span>
+                    <span class="mqd-section-count">11</span>
+                </button>
+                <div id="mqd-section-content-3" class="mqd-section-content" data-mqd-section-content hidden>
+                    <article class="mqd-item" data-mqd-item data-search-text="lenguado sole s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Lenguado</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Sole</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="rodaballo turbot s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Rodaballo</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Turbot</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="corujo corujo s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Corujo</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Corujo</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="lubina sea bass s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Lubina</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Sea bass</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="mero grouper s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Mero</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Grouper</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="sargo bream s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Sargo</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Bream</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="besugo sea bream s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Besugo</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Sea bream</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="palometa roja red pomfret s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Palometa Roja</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Red pomfret</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="martiño martiño s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Martiño</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Martiño</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="dorada gold bream s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Dorada</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Gold bream</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="brocheta de rape y langostinos monkfish and prawn skewers 28€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Brocheta de Rape y Langostinos</span><span class="mqd-item-price">28€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Monkfish and prawn skewers</div></article>
+                </div>
+            </section>
+
+            <section class="mqd-section" id="mqd-section-4" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="false" aria-controls="mqd-section-content-4">
+                    <span class="mqd-section-title-wrap"><span class="mqd-toggle-symbol">+</span><span>Carnes</span></span>
+                    <span class="mqd-section-count">1</span>
+                </button>
+                <div id="mqd-section-content-4" class="mqd-section-content" data-mqd-section-content hidden>
+                    <article class="mqd-item" data-mqd-item data-search-text="solomillo de ternera gallega galician beef tenderloin 24€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Solomillo de Ternera gallega</span><span class="mqd-item-price">24€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Galician beef tenderloin</div></article>
+                </div>
+            </section>
+
+            <section class="mqd-section" id="mqd-section-5" data-mqd-section-shell>
+                <button type="button" class="mqd-section-toggle" aria-expanded="false" aria-controls="mqd-section-content-5">
+                    <span class="mqd-section-title-wrap"><span class="mqd-toggle-symbol">+</span><span>Arroces</span></span>
+                    <span class="mqd-section-count">3</span>
+                </button>
+                <div id="mqd-section-content-5" class="mqd-section-content" data-mqd-section-content hidden>
+                    <article class="mqd-item" data-mqd-item data-search-text="arroz de marisco seafood rice 27€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Arroz de marisco</span><span class="mqd-item-price">27€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Seafood rice</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="arroz de rape y carabinero monkfish and carabinero rice 39€"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Arroz de rape y carabinero</span><span class="mqd-item-price">39€</span></div><div class="mqd-item-name-en" data-mqd-item-english>Monkfish and carabinero rice</div></article>
+                    <article class="mqd-item" data-mqd-item data-search-text="arroz de bogavante precio según el peso del bogavante lobster rice price according to the weight of the lobster s/m"><div class="mqd-item-content"><span class="mqd-item-name-es" data-mqd-item-name>Arroz de bogavante (precio según el peso del bogavante)</span><span class="mqd-item-price">S/M</span></div><div class="mqd-item-name-en" data-mqd-item-english>Lobster rice (price according to the weight of the lobster)</div></article>
+                </div>
+            </section>
+        </div>
+
+        <p class="mqd-empty-state" data-mqd-empty-state hidden>No hay resultados para esa búsqueda.</p>
+
+        <div class="mqd-downloads">
+            <a class="mqd-download-button" href="#">Descargar Carta Comida</a>
+            <a class="mqd-download-button" href="#">Descargar Carta Postres</a>
+        </div>
+
+        <button type="button" class="mqd-back-top" data-mqd-back-top hidden>Subir</button>
+    </div>
+
+    <script src="./assets/js/front.js"></script>
+</body>
+</html>
