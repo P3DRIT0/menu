@@ -1,5 +1,35 @@
 const lastOpenSectionKey = "mqd-last-open-section";
 
+function stripInjectedBreaks() {
+    document.querySelectorAll(".mqd-menu br").forEach((element) => {
+        element.remove();
+    });
+}
+
+function getScrollOffset() {
+    const adminBar = document.getElementById("wpadminbar");
+    const adminBarHeight = adminBar ? adminBar.offsetHeight : 0;
+    return adminBarHeight + 24;
+}
+
+function scrollSectionIntoView(section) {
+    if (!section) {
+        return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+    const toggle = section.querySelector(".mqd-section-toggle");
+    const anchor = toggle || section;
+    let top = anchor.getBoundingClientRect().top + window.scrollY - getScrollOffset();
+
+    if (isMobile) {
+        const toggleHeight = toggle ? toggle.offsetHeight : 56;
+        top = anchor.getBoundingClientRect().top + window.scrollY - ((window.innerHeight - toggleHeight) / 2);
+    }
+
+    window.scrollTo({ top, behavior: "smooth" });
+}
+
 function animateSection(content, expanded) {
     if (!content) {
         return;
@@ -65,7 +95,7 @@ function openSection(toggle, shouldScroll = false) {
     if (shouldScroll && section) {
         const rect = section.getBoundingClientRect();
         if (rect.top < 12 || rect.top > window.innerHeight * 0.65) {
-            section.scrollIntoView({ behavior: "smooth", block: "start" });
+            scrollSectionIntoView(section);
         }
     }
 }
@@ -131,6 +161,13 @@ function updateClearButton(value) {
 }
 
 function updateShortcutState(activeId) {
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll(".mqd-shortcut").forEach((shortcut) => {
+            shortcut.classList.remove("is-active");
+        });
+        return;
+    }
+
     document.querySelectorAll(".mqd-shortcut").forEach((shortcut) => {
         shortcut.classList.toggle("is-active", shortcut.getAttribute("data-mqd-jump") === activeId);
     });
@@ -198,12 +235,19 @@ function updateBackTopVisibility() {
 function syncActiveSection() {
     const sections = Array.from(document.querySelectorAll(".mqd-section:not([hidden])"));
     if (!sections.length) {
+        updateShortcutState("");
+        return;
+    }
+
+    const searchInput = document.querySelector("[data-mqd-search]");
+    if (window.scrollY < 40 && (!searchInput || searchInput.value.trim() === "")) {
+        updateShortcutState("");
         return;
     }
 
     let current = sections[0];
     sections.forEach((section) => {
-        if (section.getBoundingClientRect().top <= 120) {
+        if (section.getBoundingClientRect().top <= (window.innerWidth <= 768 ? window.innerHeight * 0.45 : 120)) {
             current = section;
         }
     });
@@ -233,8 +277,10 @@ document.addEventListener("click", function (event) {
 
         if (target && toggleTarget) {
             openSection(toggleTarget, false);
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-            updateShortcutState(targetId);
+            window.setTimeout(() => {
+                scrollSectionIntoView(target);
+                updateShortcutState(targetId);
+            }, 280);
         }
         return;
     }
@@ -245,6 +291,7 @@ document.addEventListener("click", function (event) {
                 setSectionState(sectionToggle, true);
             }
         });
+        syncActiveSection();
         return;
     }
 
@@ -254,6 +301,7 @@ document.addEventListener("click", function (event) {
                 setSectionState(sectionToggle, false);
             }
         });
+        syncActiveSection();
         return;
     }
 
@@ -263,6 +311,7 @@ document.addEventListener("click", function (event) {
             input.value = "";
             filterMenu("");
             input.focus();
+            syncActiveSection();
         }
         return;
     }
@@ -281,9 +330,10 @@ document.addEventListener("input", function (event) {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+    stripInjectedBreaks();
     restoreLastOpenSection();
     updateResults(document.querySelectorAll("[data-mqd-item]").length);
-    syncActiveSection();
+    updateShortcutState("");
     updateBackTopVisibility();
 });
 

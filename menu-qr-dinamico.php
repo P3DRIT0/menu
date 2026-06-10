@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Menu QR Dinamico
  * Description: Gestiona una carta dinamica con secciones plegables, ajuste global de precios y botones para PDFs.
- * Version: 1.2.0
+ * Version: 1.4.0
  * Author: Codex
  * Text Domain: menu-qr-dinamico
  */
@@ -11,10 +11,18 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+$mqd_autoload = plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+if (file_exists($mqd_autoload)) {
+    require_once $mqd_autoload;
+}
+
 final class Menu_QR_Dinamico
 {
     private const OPTION_MENU = 'mqd_menu_data';
     private const OPTION_PDFS = 'mqd_pdf_buttons';
+    private const OPTION_PUBLIC_URL = 'mqd_public_menu_url';
+    private const OPTION_PRICE_SETTINGS = 'mqd_price_settings';
+    private const OPTION_PDF_ASSETS = 'mqd_pdf_assets';
     private const OPTION_VERSION = 'mqd_plugin_version';
     private const PAGE_SLUG = 'menu-qr-dinamico';
 
@@ -40,7 +48,19 @@ final class Menu_QR_Dinamico
             add_option(self::OPTION_PDFS, self::default_pdf_buttons());
         }
 
-        update_option(self::OPTION_VERSION, '1.2.0');
+        if (get_option(self::OPTION_PUBLIC_URL, null) === null) {
+            add_option(self::OPTION_PUBLIC_URL, '');
+        }
+
+        if (get_option(self::OPTION_PRICE_SETTINGS, null) === null) {
+            add_option(self::OPTION_PRICE_SETTINGS, self::default_price_settings());
+        }
+
+        if (get_option(self::OPTION_PDF_ASSETS, null) === null) {
+            add_option(self::OPTION_PDF_ASSETS, self::default_pdf_assets());
+        }
+
+        update_option(self::OPTION_VERSION, '1.4.0');
     }
 
     private function __construct()
@@ -48,9 +68,12 @@ final class Menu_QR_Dinamico
         $this->maybe_upgrade();
         add_action('admin_menu', [$this, 'register_admin_page']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_front_assets']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_front_assets'], 99);
         add_action('admin_post_mqd_save_menu', [$this, 'handle_save_menu']);
         add_action('admin_post_mqd_adjust_prices', [$this, 'handle_adjust_prices']);
+        add_action('admin_post_preview_menu_pdf', [$this, 'handle_preview_menu_pdf']);
+        add_action('admin_post_download_menu_pdf', [$this, 'handle_download_menu_pdf']);
+        add_action('admin_post_nopriv_download_menu_pdf', [$this, 'handle_download_menu_pdf']);
         add_shortcode('menu_qr_dinamico', [$this, 'render_shortcode']);
     }
 
@@ -100,6 +123,8 @@ final class Menu_QR_Dinamico
                 'buttonTemplate'  => $this->get_pdf_button_template(),
                 'mediaTitle'      => 'Selecciona o sube un PDF',
                 'mediaButton'     => 'Usar este archivo',
+                'imageTitle'      => 'Selecciona o sube una imagen',
+                'imageButton'     => 'Usar esta imagen',
             ]
         );
     }
@@ -132,6 +157,10 @@ final class Menu_QR_Dinamico
 
         $menu_data = get_option(self::OPTION_MENU, self::default_menu());
         $pdf_buttons = get_option(self::OPTION_PDFS, self::default_pdf_buttons());
+        $public_menu_url = get_option(self::OPTION_PUBLIC_URL, '');
+        $price_settings = $this->get_price_settings();
+        $pdf_assets = $this->get_pdf_assets();
+        $qr_image_url = $public_menu_url !== '' ? $this->build_qr_image_url($public_menu_url, 320) : '';
         $notice = isset($_GET['mqd_notice']) ? sanitize_text_field(wp_unslash($_GET['mqd_notice'])) : '';
         ?>
         <div class="wrap mqd-admin-wrap">
@@ -141,33 +170,104 @@ final class Menu_QR_Dinamico
             <?php if ($notice === 'saved') : ?>
                 <div class="notice notice-success is-dismissible"><p>Carta guardada correctamente.</p></div>
             <?php elseif ($notice === 'adjusted') : ?>
-                <div class="notice notice-success is-dismissible"><p>Los precios numericos se han actualizado.</p></div>
+                <div class="notice notice-success is-dismissible"><p>El ajuste global de precios se ha guardado correctamente.</p></div>
             <?php endif; ?>
 
             <div class="mqd-admin-grid">
                 <div class="mqd-panel">
                     <h2>Subida global de precios</h2>
-                    <p>Aplica un porcentaje a toda la carta. Los valores como <strong>S/M</strong> no se tocan.</p>
+                    <p>Activa o desactiva un porcentaje global sin perder los precios originales. Los valores como <strong>S/M</strong> no se tocan.</p>
                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                         <?php wp_nonce_field('mqd_adjust_prices'); ?>
                         <input type="hidden" name="action" value="mqd_adjust_prices">
                         <div class="mqd-inline-fields">
                             <label for="mqd_percentage">Porcentaje</label>
-                            <input id="mqd_percentage" type="number" name="percentage" step="0.01" value="10" required>
-                            <button type="submit" class="button button-primary">Aplicar a toda la carta</button>
+                            <input id="mqd_percentage" type="number" name="percentage" step="0.01" value="<?php echo esc_attr((string) $price_settings['percentage']); ?>" required>
+                            <label class="mqd-switch-field" for="mqd_price_enabled">
+                                <input id="mqd_price_enabled" type="checkbox" name="price_enabled" value="1" <?php checked(! empty($price_settings['enabled'])); ?>>
+                                <span>Activar ajuste</span>
+                            </label>
+                            <button type="submit" class="button button-primary">Guardar ajuste</button>
                         </div>
+                        <p class="description">Estado actual: <strong><?php echo ! empty($price_settings['enabled']) ? 'ajuste activo' : 'precios normales'; ?></strong></p>
                     </form>
                 </div>
 
                 <div class="mqd-panel">
                     <h2>Shortcode</h2>
                     <p>Inserta <code>[menu_qr_dinamico]</code> en la pagina donde quieras mostrar la carta.</p>
+                    <p>
+                        <a
+                            class="button button-secondary"
+                            href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=preview_menu_pdf'), 'menu_pdf_action')); ?>"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Previsualizar PDF
+                        </a>
+                    </p>
                 </div>
             </div>
 
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mqd-main-form">
                 <?php wp_nonce_field('mqd_save_menu'); ?>
                 <input type="hidden" name="action" value="mqd_save_menu">
+
+                <div class="mqd-panel">
+                    <div class="mqd-panel-head">
+                        <h2>QR de la carta</h2>
+                    </div>
+                    <div class="mqd-qr-layout">
+                        <label class="mqd-field">
+                            <span>URL publica de la carta</span>
+                            <input
+                                type="url"
+                                name="public_menu_url"
+                                value="<?php echo esc_attr($public_menu_url); ?>"
+                                placeholder="https://tu-dominio.com/carta"
+                            >
+                            <small>Pega la URL completa de la pagina que contiene el shortcode <code>[menu_qr_dinamico]</code>.</small>
+                        </label>
+
+                        <div class="mqd-qr-preview">
+                            <?php if ($qr_image_url !== '') : ?>
+                                <img src="<?php echo esc_url($qr_image_url); ?>" alt="QR de la carta" width="240" height="240">
+                                <div class="mqd-qr-actions">
+                                    <a class="button button-secondary" href="<?php echo esc_url($qr_image_url); ?>" target="_blank" rel="noopener noreferrer">Abrir QR</a>
+                                    <a class="button button-primary" href="<?php echo esc_url($public_menu_url); ?>" target="_blank" rel="noopener noreferrer">Abrir carta</a>
+                                </div>
+                            <?php else : ?>
+                                <p class="mqd-qr-empty">Guarda una URL publica para ver aqui el QR listo para imprimir o compartir.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mqd-panel">
+                    <div class="mqd-panel-head">
+                        <h2>Diseno PDF</h2>
+                    </div>
+                    <div class="mqd-pdf-assets">
+                        <div class="mqd-pdf-row">
+                            <label class="mqd-field mqd-pdf-url">
+                                <span>Imagen de portada</span>
+                                <input type="url" name="pdf_assets[cover_image]" value="<?php echo esc_attr($pdf_assets['cover_image']); ?>" placeholder="https://.../portada.jpg">
+                            </label>
+                            <div class="mqd-pdf-actions">
+                                <button type="button" class="button" data-mqd-pick-image>Elegir imagen</button>
+                            </div>
+                        </div>
+                        <div class="mqd-pdf-row">
+                            <label class="mqd-field mqd-pdf-url">
+                                <span>Imagen de fondo para paginas interiores</span>
+                                <input type="url" name="pdf_assets[background_image]" value="<?php echo esc_attr($pdf_assets['background_image']); ?>" placeholder="https://.../fondo.jpg">
+                            </label>
+                            <div class="mqd-pdf-actions">
+                                <button type="button" class="button" data-mqd-pick-image>Elegir imagen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="mqd-panel">
                     <div class="mqd-panel-head">
@@ -211,9 +311,13 @@ final class Menu_QR_Dinamico
 
         $sections = isset($_POST['sections']) ? wp_unslash($_POST['sections']) : [];
         $buttons = isset($_POST['pdf_buttons']) ? wp_unslash($_POST['pdf_buttons']) : [];
+        $public_menu_url = isset($_POST['public_menu_url']) ? esc_url_raw((string) wp_unslash($_POST['public_menu_url'])) : '';
+        $pdf_assets = isset($_POST['pdf_assets']) ? wp_unslash($_POST['pdf_assets']) : [];
 
         update_option(self::OPTION_MENU, $this->sanitize_sections($sections));
         update_option(self::OPTION_PDFS, $this->sanitize_pdf_buttons($buttons));
+        update_option(self::OPTION_PUBLIC_URL, $public_menu_url);
+        update_option(self::OPTION_PDF_ASSETS, $this->sanitize_pdf_assets($pdf_assets));
 
         wp_safe_redirect($this->admin_url('saved'));
         exit;
@@ -228,29 +332,41 @@ final class Menu_QR_Dinamico
         check_admin_referer('mqd_adjust_prices');
 
         $percentage = isset($_POST['percentage']) ? (float) wp_unslash($_POST['percentage']) : 0.0;
-        $menu_data = get_option(self::OPTION_MENU, self::default_menu());
+        $enabled = isset($_POST['price_enabled']) && (string) wp_unslash($_POST['price_enabled']) === '1';
 
-        foreach ($menu_data as &$section) {
-            if (empty($section['items']) || ! is_array($section['items'])) {
-                continue;
-            }
-
-            foreach ($section['items'] as &$item) {
-                $item['price'] = $this->adjust_price($item['price'] ?? '', $percentage);
-            }
-        }
-        unset($item, $section);
-
-        update_option(self::OPTION_MENU, $menu_data);
+        update_option(
+            self::OPTION_PRICE_SETTINGS,
+            [
+                'percentage' => $percentage,
+                'enabled'    => $enabled,
+            ]
+        );
 
         wp_safe_redirect($this->admin_url('adjusted'));
         exit;
+    }
+
+    public function handle_preview_menu_pdf(): void
+    {
+        if (! current_user_can('manage_options')) {
+            wp_die('No tienes permisos para previsualizar el PDF.');
+        }
+
+        check_admin_referer('menu_pdf_action');
+
+        $this->generate_menu_pdf('preview');
+    }
+
+    public function handle_download_menu_pdf(): void
+    {
+        $this->generate_menu_pdf('download');
     }
 
     public function render_shortcode(): string
     {
         $menu_data = get_option(self::OPTION_MENU, self::default_menu());
         $pdf_buttons = get_option(self::OPTION_PDFS, self::default_pdf_buttons());
+        $price_settings = $this->get_price_settings();
 
         ob_start();
         ?>
@@ -325,13 +441,14 @@ final class Menu_QR_Dinamico
                                 if (! is_array($item)) {
                                     $item = [];
                                 }
+                                $display_price = $this->get_display_price((string) ($item['price'] ?? ''), $price_settings);
                                 $search_text = trim(
                                     implode(
                                         ' ',
                                         array_filter([
                                             isset($item['name']) ? (string) $item['name'] : '',
                                             isset($item['english_name']) ? (string) $item['english_name'] : '',
-                                            isset($item['price']) ? (string) $item['price'] : '',
+                                            $display_price,
                                         ])
                                     )
                                 );
@@ -339,7 +456,7 @@ final class Menu_QR_Dinamico
                                 <article class="mqd-item" data-mqd-item data-search-text="<?php echo esc_attr($this->normalize_search_text($search_text)); ?>">
                                     <div class="mqd-item-content">
                                         <span class="mqd-item-name-es" data-mqd-item-name><?php echo esc_html($item['name'] ?? ''); ?></span>
-                                        <span class="mqd-item-price"><?php echo esc_html($item['price'] ?? ''); ?></span>
+                                        <span class="mqd-item-price"><?php echo esc_html($display_price); ?></span>
                                     </div>
                                     <?php if (! empty($item['english_name'])) : ?>
                                         <div class="mqd-item-name-en" data-mqd-item-english><?php echo esc_html($item['english_name']); ?></div>
@@ -364,11 +481,20 @@ final class Menu_QR_Dinamico
                 </div>
             <?php endif; ?>
 
-            <button type="button" class="mqd-back-top" data-mqd-back-top hidden>Subir</button>
+            <div class="mqd-downloads">
+                <a class="mqd-download-button" href="<?php echo esc_url(admin_url('admin-post.php?action=download_menu_pdf')); ?>">
+                    Descargar PDF
+                </a>
+            </div>
+
+            <button type="button" class="mqd-back-top" data-mqd-back-top hidden aria-label="Subir">&#8593;</button>
         </div>
         <?php
 
-        return (string) ob_get_clean();
+        $html = (string) ob_get_clean();
+        $html = preg_replace('/>\s+</', '><', $html);
+
+        return is_string($html) ? $html : '';
     }
 
     private function count_menu_items(array $menu_data): int
@@ -412,6 +538,285 @@ final class Menu_QR_Dinamico
             ],
             admin_url('admin.php')
         );
+    }
+
+    private function build_qr_image_url(string $url, int $size = 320): string
+    {
+        return add_query_arg(
+            [
+                'size'   => absint($size) . 'x' . absint($size),
+                'margin' => 16,
+                'format' => 'svg',
+                'data'   => $url,
+            ],
+            'https://api.qrserver.com/v1/create-qr-code/'
+        );
+    }
+
+    private function generate_menu_pdf(string $mode = 'preview'): void
+    {
+        if (! class_exists(\Mpdf\Mpdf::class)) {
+            status_header(500);
+            wp_die('La libreria mPDF no esta disponible.');
+        }
+
+        try {
+            $temp_dir = plugin_dir_path(__FILE__) . 'tmp';
+            if (! file_exists($temp_dir)) {
+                wp_mkdir_p($temp_dir);
+            }
+
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'orientation' => 'P',
+                'margin_left' => 16,
+                'margin_right' => 16,
+                'margin_top' => 18,
+                'margin_bottom' => 18,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+                'tempDir' => $temp_dir,
+            ]);
+
+            $mpdf->SetTitle('Carta Restaurante');
+            $mpdf->SetAuthor('Menu QR Dinamico');
+            $mpdf->SetDisplayMode('fullwidth');
+            $document = $this->get_menu_pdf_document_data();
+            $pdf_assets = $this->get_pdf_assets();
+
+            if ($pdf_assets['cover_image'] !== '') {
+                $mpdf->WriteHTML($this->get_menu_pdf_cover_html($pdf_assets['cover_image']));
+            }
+
+            if ($pdf_assets['background_image'] !== '') {
+                $mpdf->SetWatermarkImage($pdf_assets['background_image'], 1, '210mm,297mm', [0, 0]);
+                $mpdf->showWatermarkImage = true;
+                $mpdf->watermarkImgBehind = true;
+                $mpdf->watermarkImageAlpha = 1;
+            }
+
+            $mpdf->WriteHTML($this->get_menu_pdf_html($document, $pdf_assets));
+
+            if ($mode === 'download') {
+                $mpdf->Output($this->get_pdf_filename(), \Mpdf\Output\Destination::DOWNLOAD);
+                exit;
+            }
+
+            $mpdf->Output($this->get_pdf_filename(), \Mpdf\Output\Destination::INLINE);
+            exit;
+        } catch (\Throwable $exception) {
+            status_header(500);
+            wp_die('No se ha podido generar el PDF en este momento.');
+        }
+    }
+
+    private function get_menu_pdf_document_data(): array
+    {
+        $menu_data = get_option(self::OPTION_MENU, self::default_menu());
+        $price_settings = $this->get_price_settings();
+        $sections = [];
+
+        foreach ($menu_data as $section) {
+            if (! is_array($section)) {
+                continue;
+            }
+
+            $title = isset($section['title']) ? (string) $section['title'] : '';
+            $items = isset($section['items']) && is_array($section['items']) ? $section['items'] : [];
+
+            if ($title === '' && empty($items)) {
+                continue;
+            }
+
+            $prepared_items = [];
+            foreach ($items as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+
+                $name_parts = $this->split_pdf_label((string) ($item['name'] ?? ''));
+                $english_parts = $this->split_pdf_label((string) ($item['english_name'] ?? ''));
+
+                $prepared_items[] = [
+                    'name' => $name_parts['main'],
+                    'name_small' => $name_parts['small'],
+                    'english_name' => $english_parts['main'],
+                    'english_small' => $english_parts['small'],
+                    'price' => $this->format_pdf_price(
+                        $this->get_display_price((string) ($item['price'] ?? ''), $price_settings)
+                    ),
+                ];
+            }
+
+            if (empty($prepared_items)) {
+                continue;
+            }
+
+            $sections[] = [
+                'title' => $this->normalize_pdf_text($title),
+                'title_en' => $this->normalize_pdf_text($this->get_section_translation($title)),
+                'title_html' => $this->format_pdf_title_html($title),
+                'title_en_html' => $this->format_pdf_translation_html($title),
+                'items' => $prepared_items,
+            ];
+        }
+
+        return [
+            'document_title' => 'Carta de comidas',
+            'sections' => $sections,
+            'seafood_note' => [
+                'es' => 'Nuestros mariscos están basados en el mercado del día.<br>Consulte tanto su disponibilidad como su precio en nuestras pizarras.',
+                'en' => 'Our seafood is based on the market of the day. Check both their availability<br>and their price on our blackboards.',
+            ],
+            'person_note' => [
+                'es' => '*Precio por persona',
+                'en' => '*Price per person',
+            ],
+            'fish_note' => [
+                'es' => 'Todos nuestros pescados son de Ría o Mar.<br>Consulte tanto su disponibilidad como precio en nuestras pizarras.',
+                'en' => 'All our fish are from the estuary or the sea.<br>Check availability and price on our blackboards.',
+            ],
+        ];
+    }
+
+    private function get_menu_pdf_html(array $document, array $pdf_assets): string
+    {
+        $document_title = $document['document_title'];
+        $sections = $document['sections'];
+        $seafood_note = $document['seafood_note'];
+        $person_note = $document['person_note'];
+        $fish_note = $document['fish_note'];
+        $background_image = $pdf_assets['background_image'];
+        $template_path = plugin_dir_path(__FILE__) . 'templates/pdf-menu.php';
+
+        if (! file_exists($template_path)) {
+            return '<h1>Carta</h1>';
+        }
+
+        ob_start();
+        include $template_path;
+        return (string) ob_get_clean();
+    }
+
+    private function get_menu_pdf_cover_html(string $cover_image): string
+    {
+        $cover_image = esc_url_raw($cover_image);
+
+        return '<!doctype html><html><head><meta charset="utf-8"><style>@page{margin:0;}body{margin:0;padding:0;background:#fff;}img{display:block;width:210mm;height:297mm;object-fit:cover;}.cover-page{page-break-after:always;}</style></head><body><div class="cover-page"><img src="' . esc_attr($cover_image) . '" alt=""></div></body></html>';
+    }
+
+    private function get_section_translation(string $title): string
+    {
+        $key = $this->normalize_search_text($title);
+        $translations = [
+            'entrantes' => 'Starters',
+            'nuestros mariscos del dia' => 'Our Seafoods from the Ria',
+            'ensaladas' => 'Salads',
+            'pescados' => 'Fishes',
+            'carnes' => 'Meats',
+            'arroces' => 'Rices',
+            'postres' => 'Desserts',
+            'bebidas' => 'Drinks',
+        ];
+
+        return $translations[$key] ?? '';
+    }
+
+    private function normalize_pdf_text(string $text): string
+    {
+        $text = str_replace(['â‚¬', "\r\n", "\r"], ['€', "\n", "\n"], $text);
+        $text = wp_strip_all_tags($text);
+        $text = preg_replace("/[ \t]+/", ' ', $text);
+        return trim((string) $text);
+    }
+
+    private function get_pdf_filename(): string
+    {
+        return 'carta-restaurante-' . gmdate('Ymd-His') . '.pdf';
+    }
+
+    private function get_pdf_assets(): array
+    {
+        $assets = get_option(self::OPTION_PDF_ASSETS, self::default_pdf_assets());
+
+        if (! is_array($assets)) {
+            return self::default_pdf_assets();
+        }
+
+        return [
+            'cover_image' => isset($assets['cover_image']) ? esc_url_raw((string) $assets['cover_image']) : '',
+            'background_image' => isset($assets['background_image']) ? esc_url_raw((string) $assets['background_image']) : '',
+        ];
+    }
+
+    private function sanitize_pdf_assets($assets): array
+    {
+        if (! is_array($assets)) {
+            return self::default_pdf_assets();
+        }
+
+        return [
+            'cover_image' => isset($assets['cover_image']) ? esc_url_raw((string) $assets['cover_image']) : '',
+            'background_image' => isset($assets['background_image']) ? esc_url_raw((string) $assets['background_image']) : '',
+        ];
+    }
+
+    private function format_pdf_price(string $price): string
+    {
+        $price = $this->normalize_pdf_text($price);
+
+        if ($price === '' || stripos($price, 's/m') !== false) {
+            return $price;
+        }
+
+        if (! preg_match('/(\d+(?:[.,]\d+)?)/', $price, $matches)) {
+            return $price;
+        }
+
+        $amount = (float) str_replace(',', '.', $matches[1]);
+        return number_format($amount, 2, ',', '.') . ' €';
+    }
+
+    private function format_pdf_title_html(string $title): string
+    {
+        $clean = $this->normalize_pdf_text($title);
+
+        if ($this->normalize_search_text($clean) === 'nuestros mariscos del dia') {
+            return 'Nuestros<br>Mariscos<br>del Dia';
+        }
+
+        return esc_html($clean);
+    }
+
+    private function format_pdf_translation_html(string $title): string
+    {
+        if ($this->normalize_search_text($title) === 'nuestros mariscos del dia') {
+            return 'Our<br>Seafoods<br>from the Ria';
+        }
+
+        return esc_html($this->normalize_pdf_text($this->get_section_translation($title)));
+    }
+
+    private function split_pdf_label(string $text): array
+    {
+        $text = $this->normalize_pdf_text($text);
+
+        if ($text === '') {
+            return ['main' => '', 'small' => ''];
+        }
+
+        if (preg_match('/^(.*?)\s*(\([^)]*\))$/u', $text, $matches)) {
+            return [
+                'main' => trim($matches[1]),
+                'small' => trim($matches[2]),
+            ];
+        }
+
+        return [
+            'main' => $text,
+            'small' => '',
+        ];
     }
 
     private function render_section_fields(int $index, array $section): void
@@ -580,11 +985,34 @@ final class Menu_QR_Dinamico
         return $formatted . '€';
     }
 
+    private function get_display_price(string $price, array $price_settings): string
+    {
+        if (empty($price_settings['enabled'])) {
+            return $price;
+        }
+
+        return $this->adjust_price($price, (float) ($price_settings['percentage'] ?? 0));
+    }
+
+    private function get_price_settings(): array
+    {
+        $settings = get_option(self::OPTION_PRICE_SETTINGS, self::default_price_settings());
+
+        if (! is_array($settings)) {
+            return self::default_price_settings();
+        }
+
+        return [
+            'percentage' => isset($settings['percentage']) ? (float) $settings['percentage'] : 10.0,
+            'enabled'    => ! empty($settings['enabled']),
+        ];
+    }
+
     private function maybe_upgrade(): void
     {
         $installed_version = get_option(self::OPTION_VERSION, '1.0.0');
 
-        if (version_compare((string) $installed_version, '1.2.0', '>=')) {
+        if (version_compare((string) $installed_version, '1.4.0', '>=')) {
             return;
         }
 
@@ -630,7 +1058,19 @@ final class Menu_QR_Dinamico
             update_option(self::OPTION_MENU, $menu_data);
         }
 
-        update_option(self::OPTION_VERSION, '1.2.0');
+        if (get_option(self::OPTION_PUBLIC_URL, null) === null) {
+            add_option(self::OPTION_PUBLIC_URL, '');
+        }
+
+        if (get_option(self::OPTION_PRICE_SETTINGS, null) === null) {
+            add_option(self::OPTION_PRICE_SETTINGS, self::default_price_settings());
+        }
+
+        if (get_option(self::OPTION_PDF_ASSETS, null) === null) {
+            add_option(self::OPTION_PDF_ASSETS, self::default_pdf_assets());
+        }
+
+        update_option(self::OPTION_VERSION, '1.4.0');
     }
 
     private function get_section_template(): string
@@ -659,6 +1099,22 @@ final class Menu_QR_Dinamico
         return [
             ['label' => 'Descargar Carta Comida', 'url' => ''],
             ['label' => 'Descargar Carta Postres', 'url' => ''],
+        ];
+    }
+
+    private static function default_price_settings(): array
+    {
+        return [
+            'percentage' => 10.0,
+            'enabled'    => false,
+        ];
+    }
+
+    private static function default_pdf_assets(): array
+    {
+        return [
+            'cover_image' => '',
+            'background_image' => '',
         ];
     }
 

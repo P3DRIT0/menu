@@ -113,5 +113,24 @@
         frame.open();
     });
 
+    $(document).on("click", "[data-mqd-pick-image]", function (event) {
+        event.preventDefault();
+
+        const $target = $(this).closest(".mqd-pdf-row").find('input[type="url"]').first();
+        const frame = wp.media({
+            title: mqdAdmin.imageTitle,
+            button: { text: mqdAdmin.imageButton },
+            library: { type: "image" },
+            multiple: false
+        });
+
+        frame.on("select", function () {
+            const attachment = frame.state().get("selection").first().toJSON();
+            $target.val(attachment.url).trigger("change");
+        });
+
+        frame.open();
+    });
+
     refreshIndexes();
 })(jQuery);

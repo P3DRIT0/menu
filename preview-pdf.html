@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Preview PDF Menu QR Dinamico</title>
+    <style>
+        :root {
+            --pdf-bg: #ffffff;
+            --pdf-paper: #fffdfb;
+            --pdf-ink: #6d655d;
+            --pdf-ink-soft: #9d948b;
+            --pdf-ink-title: #7a6f66;
+            --pdf-shadow: rgba(49, 37, 28, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 32px 16px;
+            background:
+                linear-gradient(180deg, #f3eee8 0%, #ede7df 100%);
+            color: var(--pdf-ink);
+            font-family: "Georgia", "Times New Roman", serif;
+        }
+
+        .pdf-preview-shell {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .pdf-preview-heading {
+            margin: 0 0 20px;
+            text-align: center;
+            font: 600 14px/1.4 Arial, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #7d736b;
+        }
+
+        .pdf-page {
+            width: min(100%, 794px);
+            min-height: 1123px;
+            margin: 0 auto;
+            padding: 68px 62px 72px;
+            background: var(--pdf-paper);
+            box-shadow: 0 30px 60px var(--pdf-shadow);
+        }
+
+        .pdf-header {
+            margin-bottom: 58px;
+            text-align: center;
+        }
+
+        .pdf-title {
+            margin: 0;
+            color: var(--pdf-ink-title);
+            font-size: 34px;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .pdf-subtitle {
+            margin-top: 10px;
+            color: var(--pdf-ink-soft);
+            font-size: 12px;
+            font-style: italic;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .pdf-section {
+            margin-bottom: 38px;
+        }
+
+        .pdf-section-heading {
+            margin: 0 0 20px;
+        }
+
+        .pdf-section-title {
+            display: block;
+            color: var(--pdf-ink);
+            font-size: 23px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .pdf-section-translation {
+            display: block;
+            margin-top: 5px;
+            color: var(--pdf-ink-soft);
+            font-size: 14px;
+            font-style: italic;
+            letter-spacing: 0.02em;
+        }
+
+        .pdf-items {
+            display: grid;
+            gap: 18px;
+        }
+
+        .pdf-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .pdf-item-name {
+            display: block;
+            color: var(--pdf-ink);
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.28;
+        }
+
+        .pdf-item-translation {
+            display: block;
+            margin-top: 4px;
+            color: var(--pdf-ink-soft);
+            font-size: 14px;
+            font-style: italic;
+            line-height: 1.35;
+        }
+
+        .pdf-item-price {
+            padding-top: 2px;
+            color: var(--pdf-ink);
+            font-size: 18px;
+            font-weight: 500;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        @media (max-width: 820px) {
+            body {
+                padding: 18px 10px;
+            }
+
+            .pdf-page {
+                padding: 34px 24px 42px;
+                min-height: auto;
+            }
+
+            .pdf-header {
+                margin-bottom: 36px;
+            }
+
+            .pdf-title {
+                font-size: 28px;
+            }
+
+            .pdf-section-title {
+                font-size: 20px;
+            }
+
+            .pdf-item-name,
+            .pdf-item-price {
+                font-size: 16px;
+            }
+
+            .pdf-item-translation,
+            .pdf-section-translation {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-preview-shell">
+        <p class="pdf-preview-heading">Previsualización del diseño PDF</p>
+
+        <article class="pdf-page">
+            <header class="pdf-header">
+                <h1 class="pdf-title">Carta de comidas</h1>
+                <div class="pdf-subtitle">Restaurant Menu</div>
+            </header>
+
+            <section class="pdf-section">
+                <h2 class="pdf-section-heading">
+                    <span class="pdf-section-title">Entrantes</span>
+                    <span class="pdf-section-translation">Starters</span>
+                </h2>
+
+                <div class="pdf-items">
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Anchoas con tetilla</span>
+                            <span class="pdf-item-translation">Anchovies with tetilla</span>
+                        </div>
+                        <div class="pdf-item-price">28,00 €</div>
+                    </div>
+
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Croquetas de Carabinero</span>
+                            <span class="pdf-item-translation">King Prawn Croquettes</span>
+                        </div>
+                        <div class="pdf-item-price">15,00 €</div>
+                    </div>
+
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Pulpo Feira o Plancha</span>
+                            <span class="pdf-item-translation">Octopus Feira or Grilled</span>
+                        </div>
+                        <div class="pdf-item-price">23,00 €</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pdf-section">
+                <h2 class="pdf-section-heading">
+                    <span class="pdf-section-title">Nuestros Mariscos del Día</span>
+                    <span class="pdf-section-translation">Today's Seafood</span>
+                </h2>
+
+                <div class="pdf-items">
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Navajas a la plancha</span>
+                            <span class="pdf-item-translation">Grilled razor clams</span>
+                        </div>
+                        <div class="pdf-item-price">S/M</div>
+                    </div>
+
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Almejas a la Marinera</span>
+                            <span class="pdf-item-translation">Clams a la Marinera</span>
+                        </div>
+                        <div class="pdf-item-price">S/M</div>
+                    </div>
+
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Zamburiña</span>
+                            <span class="pdf-item-translation">Scallop</span>
+                        </div>
+                        <div class="pdf-item-price">20,00 €</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pdf-section">
+                <h2 class="pdf-section-heading">
+                    <span class="pdf-section-title">Arroces</span>
+                    <span class="pdf-section-translation">Rice Dishes</span>
+                </h2>
+
+                <div class="pdf-items">
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Arroz de marisco</span>
+                            <span class="pdf-item-translation">Seafood rice</span>
+                        </div>
+                        <div class="pdf-item-price">27,00 €</div>
+                    </div>
+
+                    <div class="pdf-item">
+                        <div>
+                            <span class="pdf-item-name">Arroz de rape y carabinero</span>
+                            <span class="pdf-item-translation">Monkfish and carabinero rice</span>
+                        </div>
+                        <div class="pdf-item-price">39,00 €</div>
+                    </div>
+                </div>
+            </section>
+        </article>
+    </div>
+</body>
+</html>
